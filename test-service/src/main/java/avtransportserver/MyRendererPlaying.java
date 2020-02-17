@@ -6,6 +6,7 @@ import org.fourthline.cling.support.avtransport.impl.state.AbstractState;
 import org.fourthline.cling.support.avtransport.impl.state.Playing;
 import org.fourthline.cling.support.model.AVTransport;
 import org.fourthline.cling.support.model.SeekMode;
+import vlcdemo.MyMediaPlayer;
 
 /**
  * @author xiaohe.yz
@@ -22,6 +23,8 @@ public class MyRendererPlaying extends Playing {
     public void onEntry() {
         super.onEntry();
         // Start playing now!
+        MyMediaPlayer.startVideo(getTransport().getMediaInfo().getCurrentURI());
+        System.out.println("afterPlay");
     }
 
     @Override

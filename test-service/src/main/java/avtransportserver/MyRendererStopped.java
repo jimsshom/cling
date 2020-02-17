@@ -6,7 +6,6 @@ import org.fourthline.cling.support.avtransport.impl.state.AbstractState;
 import org.fourthline.cling.support.avtransport.impl.state.Stopped;
 import org.fourthline.cling.support.model.AVTransport;
 import org.fourthline.cling.support.model.SeekMode;
-import vlcdemo.Tutorial;
 
 /**
  * @author xiaohe.yz
@@ -47,9 +46,6 @@ public class MyRendererStopped extends Stopped {
     @Override
     public Class<? extends AbstractState> play(String speed) {
         // It's easier to let this classes' onEntry() method do the work
-        Tutorial.startVideo(getTransport().getMediaInfo().getCurrentURI());
-
-        System.out.println("afterPlay");
         return MyRendererPlaying.class;
     }
 
