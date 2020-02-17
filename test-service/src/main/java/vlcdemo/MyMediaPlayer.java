@@ -41,7 +41,6 @@ public class MyMediaPlayer {
 
     private static long totalTime = 0;
     private static long curTime = 0;
-    //private static int PROGRESS_BAR_STEPS = 1000;
 
     public static void startVideo(String url) {
         frame = new JFrame("My First Media Player");
@@ -120,14 +119,14 @@ public class MyMediaPlayer {
             @Override
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
-                System.out.println(source.getValue() + String.valueOf(!source.getValueIsAdjusting()));
-                if (!source.getValueIsAdjusting()) {
-                    System.out.println(source.getValue() + " & " + curTime/1000);
-                    if (Math.abs(source.getValue() - curTime/1000) > 10) {
-                        long newTime = source.getValue() * 1000;
-                        System.out.println(curTime + "->" + newTime);
-                        mediaPlayerComponent.mediaPlayer().controls().setTime(newTime);
-                    }
+                //System.out.println(source.getValue() + String.valueOf(!source.getValueIsAdjusting()));
+                if (Math.abs(source.getValue() - curTime/1000) > 5) {
+                    mediaPlayerComponent.mediaPlayer().controls().pause();
+                    //System.out.println(source.getValue() + " & " + curTime/1000);
+                    long newTime = source.getValue() * 1000;
+                    //System.out.println(curTime + "->" + newTime);
+                    mediaPlayerComponent.mediaPlayer().controls().setTime(newTime);
+                    mediaPlayerComponent.mediaPlayer().controls().play();
                 }
             }
         });
@@ -185,7 +184,6 @@ public class MyMediaPlayer {
         mediaPlayerComponent.mediaPlayer().fullScreen().strategy(new AdaptiveFullScreenStrategy(frame));
         //mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
         //mediaPlayerComponent.mediaPlayer().marquee().set(marquee);
-        //mediaPlayerComponent.mediaPlayer().media().play("/Users/jimsshom/Desktop/test.mkv");
         mediaPlayerComponent.mediaPlayer().media().play(url);
     }
 
