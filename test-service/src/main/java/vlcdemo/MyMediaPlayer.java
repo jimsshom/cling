@@ -3,11 +3,14 @@ package vlcdemo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -33,6 +36,14 @@ import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreen
  * http://capricasoftware.co.uk/projects/vlcj-4/tutorials
  * http://caprica.github.io/vlcj/javadoc/4.1.0/index.html
  */
+
+/**
+ * FIXME:
+ * 1. 暂停时改变进度会自动播放
+ * 2. 从50多秒开始放
+ * 3. 界面布局
+ * 4. 捕获不到键盘事件
+ */
 public class MyMediaPlayer {
     private static JFrame frame;
 
@@ -43,8 +54,18 @@ public class MyMediaPlayer {
     private static long curTime = 0;
 
     public static void startVideo(String url) {
+        String path = "/Users/jimsshom/Works/GitRepo/cling/test-service/src/main/resources/";
+        final Icon fullIcon = new ImageIcon(new ImageIcon(path + "FullScreen.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+        final Icon pauseIcon = new ImageIcon(new ImageIcon(path + "pause.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+        final Icon playIcon = new ImageIcon(new ImageIcon(path + "play.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+        final Icon volumeIcon = new ImageIcon(new ImageIcon(path + "volume.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+        final Icon stopIcon = new ImageIcon(new ImageIcon(path + "Stop.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+
+        final JPanel controlsPane = new JPanel();
+        final JButton pauseButton = new JButton();
+
         frame = new JFrame("My First Media Player");
-        frame.setBounds(100, 100, 600, 400);
+        frame.setBounds(100, 100, 800, 600);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -59,31 +80,75 @@ public class MyMediaPlayer {
         mediaPlayerComponent = new CallbackMediaPlayerComponent() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mediaPlayerComponent.mediaPlayer().media().info().state().equals(State.PLAYING)) {
+                if (mediaPlayerComponent.mediaPlayer().media().info().state().equals(State.PLAYING)) {
+                    mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                        @Override
+                        public void run() {
                             mediaPlayerComponent.mediaPlayer().controls().pause();
-                        } else if (mediaPlayerComponent.mediaPlayer().media().info().state().equals(State.PAUSED)) {
+                        }
+                    });
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseButton.setIcon(playIcon);
+                        }
+                    });
+                } else {
+                    mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                        @Override
+                        public void run() {
                             mediaPlayerComponent.mediaPlayer().controls().play();
                         }
-                    }
-                });
+                    });
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseButton.setIcon(pauseIcon);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) { //FIXME: 不知为何收不到键盘消息
+                System.out.println(e.getKeyCode());
+                System.out.println(e.getKeyChar());
+                super.keyPressed(e);
             }
         };
 
+        mediaPlayerComponent.mediaPlayer().input().enableKeyInputHandling(false);
+        mediaPlayerComponent.mediaPlayer().input().enableMouseInputHandling(false);
+
+        mediaPlayerComponent.videoSurfaceComponent().requestFocus();
+
         contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
-        JPanel controlsPane = new JPanel();
-        JButton pauseButton = new JButton("Pause");
+
+
+        pauseButton.setIcon(pauseIcon);
         controlsPane.add(pauseButton);
-        JButton stopButton = new JButton("Stop");
+        JButton stopButton = new JButton();
+        stopButton.setIcon(stopIcon);
         controlsPane.add(stopButton);
 
-        final JSlider slider = new JSlider();
-        slider.setMinimum(0);
-        slider.setMaximum(100);
-        slider.setMinimumSize(new Dimension(400, 20));
-        controlsPane.add(slider);
+        JLabel volumeLabel = new JLabel();
+        volumeLabel.setIcon(volumeIcon);
+        controlsPane.add(volumeLabel);
+
+        JSlider volumeBar = new JSlider();
+        volumeBar.setMinimum(0);
+        volumeBar.setMaximum(100);
+        volumeBar.setValue(100);
+        controlsPane.add(volumeBar);
+
+        JButton fullScreenButton = new JButton();
+        fullScreenButton.setIcon(fullIcon);
+        controlsPane.add(fullScreenButton);
+
+        final JSlider progressBar = new JSlider();
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(100);
+        controlsPane.add(progressBar);
 
         final JLabel totalTimeLabel = new JLabel("--");
         final JLabel splitLabel = new JLabel("/");
@@ -91,6 +156,7 @@ public class MyMediaPlayer {
         controlsPane.add(curTimeLabel);
         controlsPane.add(splitLabel);
         controlsPane.add(totalTimeLabel);
+
         contentPane.add(controlsPane, BorderLayout.SOUTH);
 
         frame.setContentPane(contentPane);
@@ -99,7 +165,13 @@ public class MyMediaPlayer {
         pauseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mediaPlayerComponent.mediaPlayer().controls().pause();
+                if (mediaPlayerComponent.mediaPlayer().media().info().state().equals(State.PLAYING)) {
+                    mediaPlayerComponent.mediaPlayer().controls().pause();
+                    pauseButton.setIcon(playIcon);
+                } else if (mediaPlayerComponent.mediaPlayer().media().info().state().equals(State.PAUSED)) {
+                    mediaPlayerComponent.mediaPlayer().controls().play();
+                    pauseButton.setIcon(pauseIcon);
+                }
             }
         });
 
@@ -115,7 +187,14 @@ public class MyMediaPlayer {
             }
         });
 
-        slider.addChangeListener(new ChangeListener() {
+        fullScreenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
+            }
+        });
+
+        progressBar.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
@@ -127,6 +206,16 @@ public class MyMediaPlayer {
                     //System.out.println(curTime + "->" + newTime);
                     mediaPlayerComponent.mediaPlayer().controls().setTime(newTime);
                     mediaPlayerComponent.mediaPlayer().controls().play();
+                }
+            }
+        });
+
+        volumeBar.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider)e.getSource();
+                if (!source.getValueIsAdjusting()) {
+                    mediaPlayerComponent.mediaPlayer().audio().setVolume(source.getValue());
                 }
             }
         });
@@ -150,7 +239,7 @@ public class MyMediaPlayer {
                     @Override
                     public void run() {
                         curTimeLabel.setText(MyMediaPlayer.parseTimestamp(newTime));
-                        slider.setValue((int)(newTime / 1000));
+                        progressBar.setValue((int)(newTime / 1000));
                     }
                 });
                 super.timeChanged(mediaPlayer, newTime);
@@ -165,7 +254,7 @@ public class MyMediaPlayer {
                     @Override
                     public void run() {
                         totalTimeLabel.setText(MyMediaPlayer.parseTimestamp(newDuration));
-                        slider.setMaximum((int)(newDuration / 1000));
+                        progressBar.setMaximum((int)(newDuration / 1000));
                     }
                 });
                 super.mediaDurationChanged(media, newDuration);
@@ -181,7 +270,19 @@ public class MyMediaPlayer {
             .opacity(0.8f)
             .enable();
 
-        mediaPlayerComponent.mediaPlayer().fullScreen().strategy(new AdaptiveFullScreenStrategy(frame));
+        mediaPlayerComponent.mediaPlayer().fullScreen().strategy(new AdaptiveFullScreenStrategy(frame) {
+            @Override
+            protected void onBeforeEnterFullScreen() {
+                //controlsPane.setVisible(false);
+                super.onBeforeEnterFullScreen();
+            }
+
+            @Override
+            protected void onAfterExitFullScreen() {
+                //controlsPane.setVisible(true);
+                super.onAfterExitFullScreen();
+            }
+        });
         //mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
         //mediaPlayerComponent.mediaPlayer().marquee().set(marquee);
         mediaPlayerComponent.mediaPlayer().media().play(url);
