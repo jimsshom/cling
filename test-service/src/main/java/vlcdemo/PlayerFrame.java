@@ -60,9 +60,10 @@ public class PlayerFrame {
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
+                //System.out.println("resize");
                 int newWidth = frame.getWidth() - 438;
                 //System.out.println(frame.getWidth() + "->" + newWidth);
-                progressPane.setPreferredSize(new Dimension(newWidth, 29));
+                resizeProgressBar(newWidth);
                 super.componentResized(e);
 
                 mediaPlayerManager.returnFocus();
@@ -74,10 +75,10 @@ public class PlayerFrame {
             public void actionPerformed(ActionEvent e) {
                 if (mediaPlayerManager.isPlaying()) {
                     mediaPlayerManager.pause();
-                    updateIconWhenPause();
+                    updateIconWhenPauseBySwing();
                 } else {
                     mediaPlayerManager.play();
-                    updateIconWhenPlay();
+                    updateIconWhenPlayBySwing();
                 }
                 mediaPlayerManager.returnFocus();
             }
@@ -116,7 +117,7 @@ public class PlayerFrame {
                     //System.out.println(curTime + "->" + newTime);
                     mediaPlayerManager.seekByTime(newTime);
                     mediaPlayerManager.play();
-                    updateIconWhenPlay();
+                    updateIconWhenPlayBySwing();
                 }
                 mediaPlayerManager.returnFocus();
             }
@@ -138,19 +139,64 @@ public class PlayerFrame {
         return frame;
     }
 
-    public void closeFrame() {
-        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    /**
+     * 以下为Swing界面的更新，均使用SwingUtilities.invokeLater更新
+     */
+    public void updateIconWhenPlayBySwing() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                pauseButton.setIcon(pauseIcon);
+            }
+        });
     }
 
-    public void updatePlayProgress(long curTime) {
-        setCurTime(curTime);
-        updateCurrentTimeLabel(curTime);
-        setProgressValue(curTime);
+    public void updateIconWhenPauseBySwing() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                pauseButton.setIcon(playIcon);
+            }
+        });
     }
 
-    public void updateTotalDuration(long totalTime) {
-        updateTotalTimeLabel(totalTime);
-        setProgressMaxValue(totalTime);
+    public void closeFrameBySwing() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            }
+        });
+    }
+
+    public void updatePlayProgressBySwing(final long curTime) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setCurTime(curTime);
+                updateCurrentTimeLabel(curTime);
+                setProgressValue(curTime);
+            }
+        });
+    }
+
+    public void updateTotalDurationBySwing(final long totalTime) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                updateTotalTimeLabel(totalTime);
+                setProgressMaxValue(totalTime);
+            }
+        });
+    }
+
+    private void resizeProgressBar(final int width) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                progressPane.setPreferredSize(new Dimension(width, 29));
+            }
+        });
     }
 
     private static void setCurTime(long curTime) {
@@ -181,14 +227,6 @@ public class PlayerFrame {
         long s = sec % 60;
 
         return String.format("%02d:%02d:%02d", h, m, s);
-    }
-
-    public void updateIconWhenPlay() {
-        pauseButton.setIcon(pauseIcon);
-    }
-
-    public void updateIconWhenPause() {
-        pauseButton.setIcon(playIcon);
     }
 
     /**

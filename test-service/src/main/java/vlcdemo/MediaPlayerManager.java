@@ -36,23 +36,13 @@ public class MediaPlayerManager {
         mediaPlayerComponent.mediaPlayer().events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
             public void finished(MediaPlayer mediaPlayer) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        playerFrame.closeFrame();
-                    }
-                });
+                playerFrame.closeFrameBySwing();
                 //super.finished(mediaPlayer);
             }
 
             @Override
             public void timeChanged(MediaPlayer mediaPlayer, final long newTime) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        playerFrame.updatePlayProgress(newTime);
-                    }
-                });
+                playerFrame.updatePlayProgressBySwing(newTime);
                 super.timeChanged(mediaPlayer, newTime);
             }
         });
@@ -60,12 +50,7 @@ public class MediaPlayerManager {
         mediaPlayerComponent.mediaPlayer().events().addMediaEventListener(new MediaEventAdapter() {
             @Override
             public void mediaDurationChanged(Media media, final long newDuration) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        playerFrame.updateTotalDuration(newDuration);
-                    }
-                });
+                playerFrame.updateTotalDurationBySwing(newDuration);
                 super.mediaDurationChanged(media, newDuration);
             }
         });
@@ -106,12 +91,7 @@ public class MediaPlayerManager {
                             pause();
                         }
                     });
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            playerFrame.updateIconWhenPause();
-                        }
-                    });
+                    playerFrame.updateIconWhenPauseBySwing();
                 } else {
                     mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
                         @Override
@@ -119,12 +99,7 @@ public class MediaPlayerManager {
                             play();
                         }
                     });
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            playerFrame.updateIconWhenPlay();
-                        }
-                    });
+                    playerFrame.updateIconWhenPlayBySwing();
                 }
                 super.mouseClicked(e);
             }
