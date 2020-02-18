@@ -68,14 +68,14 @@ public class MediaPlayerManager {
         mediaPlayerComponent.mediaPlayer().fullScreen().strategy(new AdaptiveFullScreenStrategy(playerFrame.getFrame()) {
             @Override
             protected void onBeforeEnterFullScreen() {
-                //controlsPane.setVisible(false);
+                playerFrame.hideControlPane();
                 mediaPlayerComponent.videoSurfaceComponent().addKeyListener(exitFullScreenKeyAdapter);
                 super.onBeforeEnterFullScreen();
             }
 
             @Override
             protected void onAfterExitFullScreen() {
-                //controlsPane.setVisible(true);
+                playerFrame.showControlPane();
                 mediaPlayerComponent.videoSurfaceComponent().removeKeyListener(exitFullScreenKeyAdapter);
                 super.onAfterExitFullScreen();
             }

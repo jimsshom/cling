@@ -36,6 +36,7 @@ public class PlayerFrame {
     private JSlider volumeBar;
     private JButton fullScreenButton;
     private JPanel progressPane;
+    private JPanel controlsPane;
     private JSlider progressBar;
     private JLabel totalTimeLabel;
     private JLabel curTimeLabel;
@@ -142,6 +143,24 @@ public class PlayerFrame {
     /**
      * 以下为Swing界面的更新，均使用SwingUtilities.invokeLater更新
      */
+    public void hideControlPane() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                controlsPane.setVisible(false);
+            }
+        });
+    }
+
+    public void showControlPane() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                controlsPane.setVisible(true);
+            }
+        });
+    }
+
     public void updateIconWhenPlayBySwing() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -239,12 +258,12 @@ public class PlayerFrame {
      */
     private void initialStaticLayout(CallbackMediaPlayerComponent mediaPlayerComponent) {
         final JPanel contentPane = new JPanel();
-        final JPanel controlsPane = new JPanel();
         final JPanel volumePane = new JPanel(new BorderLayout());
         final JLabel volumeLabel = new JLabel();
         final JLabel splitLabel = new JLabel("/");
 
         contentPane.setLayout(new BorderLayout());
+        controlsPane = new JPanel();
         progressPane = new JPanel(new BorderLayout());
 
         pauseButton = new JButton();
