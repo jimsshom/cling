@@ -3,6 +3,8 @@ package vlcdemo;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -39,7 +41,6 @@ import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreen
 
 /**
  * FIXME:
- * 3. 界面布局
  * 4. 捕获不到键盘事件
  */
 public class MyMediaPlayer {
@@ -59,11 +60,27 @@ public class MyMediaPlayer {
         final Icon volumeIcon = new ImageIcon(new ImageIcon(path + "volume.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
         final Icon stopIcon = new ImageIcon(new ImageIcon(path + "Stop.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
 
+        final JPanel contentPane = new JPanel();
         final JPanel controlsPane = new JPanel();
+        final JPanel volumePane = new JPanel(new BorderLayout());
+        final JPanel progressPane = new JPanel(new BorderLayout());
+
         final JButton pauseButton = new JButton();
+        final JButton stopButton = new JButton();
+        final JLabel volumeLabel = new JLabel();
+        final JSlider volumeBar = new JSlider();
+        final JButton fullScreenButton = new JButton();
+        final JSlider progressBar = new JSlider();
+
+        final JLabel totalTimeLabel = new JLabel("--");
+        totalTimeLabel.setSize(100, 29);
+        final JLabel splitLabel = new JLabel("/");
+        final JLabel curTimeLabel = new JLabel("--");
+        curTimeLabel.setSize(100, 29);
 
         frame = new JFrame("My First Media Player");
         frame.setBounds(100, 100, 800, 600);
+        frame.setMinimumSize(new Dimension(600, 450));
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -72,8 +89,16 @@ public class MyMediaPlayer {
                 System.exit(0);
             }
         });
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int newWidth = frame.getWidth() - 438;
+                //System.out.println(frame.getWidth() + "->" + newWidth);
+                progressPane.setPreferredSize(new Dimension(newWidth, 29));
+                super.componentResized(e);
+            }
+        });
 
-        JPanel contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout());
         mediaPlayerComponent = new CallbackMediaPlayerComponent() {
             @Override
@@ -122,40 +147,36 @@ public class MyMediaPlayer {
 
         contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
 
-
         pauseButton.setIcon(pauseIcon);
         controlsPane.add(pauseButton);
-        JButton stopButton = new JButton();
+
         stopButton.setIcon(stopIcon);
         controlsPane.add(stopButton);
 
-        JLabel volumeLabel = new JLabel();
+        volumePane.setPreferredSize(new Dimension(100, 29));
+
         volumeLabel.setIcon(volumeIcon);
         controlsPane.add(volumeLabel);
 
-        JSlider volumeBar = new JSlider();
         volumeBar.setMinimum(0);
         volumeBar.setMaximum(100);
         volumeBar.setValue(100);
-        controlsPane.add(volumeBar);
+        volumePane.add(volumeBar);
+        controlsPane.add(volumePane);
 
-        JButton fullScreenButton = new JButton();
         fullScreenButton.setIcon(fullIcon);
         controlsPane.add(fullScreenButton);
 
-        final JSlider progressBar = new JSlider();
+        progressPane.setPreferredSize(new Dimension(362, 29));
         progressBar.setMinimum(0);
         progressBar.setMaximum(100);
         progressBar.setValue(0);
-        controlsPane.add(progressBar);
+        progressPane.add(progressBar);
+        controlsPane.add(progressPane);
 
-        final JLabel totalTimeLabel = new JLabel("--");
-        final JLabel splitLabel = new JLabel("/");
-        final JLabel curTimeLabel = new JLabel("--");
         controlsPane.add(curTimeLabel);
         controlsPane.add(splitLabel);
         controlsPane.add(totalTimeLabel);
-
         contentPane.add(controlsPane, BorderLayout.SOUTH);
 
         frame.setContentPane(contentPane);
@@ -290,6 +311,20 @@ public class MyMediaPlayer {
         //mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
         //mediaPlayerComponent.mediaPlayer().marquee().set(marquee);
         mediaPlayerComponent.mediaPlayer().media().play(url);
+
+        System.out.println("contentPane=" + contentPane.getWidth());
+        System.out.println("controlsPane=" + controlsPane.getWidth());
+        System.out.println("pauseButton=" + pauseButton.getWidth());
+        System.out.println("stopButton=" + stopButton.getWidth());
+        System.out.println("volumePane=" + volumePane.getSize());
+        System.out.println("volumeLabel=" + volumeLabel.getWidth());
+        System.out.println("volumeBar=" + volumeBar.getSize());
+        System.out.println("fullScreenButton=" + fullScreenButton.getWidth());
+        System.out.println("progressPane=" + progressPane.getSize());
+        System.out.println("progressBar=" + progressBar.getWidth());
+        System.out.println("curTimeLabel=" + curTimeLabel.getSize());
+        System.out.println("splitLabel=" + splitLabel.getSize());
+        System.out.println("totalTimeLabel=" + totalTimeLabel.getSize());
     }
 
     private static String parseTimestamp(long ms) {
