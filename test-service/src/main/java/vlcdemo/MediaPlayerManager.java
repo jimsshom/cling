@@ -5,13 +5,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.*;
+import javax.xml.transform.Result;
 
 import uk.co.caprica.vlcj.media.Media;
 import uk.co.caprica.vlcj.media.MediaEventAdapter;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.player.base.State;
 import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreenStrategy;
 
@@ -22,7 +21,7 @@ import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreen
  */
 public class MediaPlayerManager {
     //private final EmbeddedMediaPlayerComponent mediaPlayerComponent; //macos下用不了，见官方文档
-    private static CallbackMediaPlayerComponent mediaPlayerComponent = new CallbackMediaPlayerComponent();
+    private CallbackMediaPlayerComponent mediaPlayerComponent = new CallbackMediaPlayerComponent();
     private KeyAdapter exitFullScreenKeyAdapter;
 
     public CallbackMediaPlayerComponent getMediaPlayerComponent() {
@@ -35,8 +34,14 @@ public class MediaPlayerManager {
 
         mediaPlayerComponent.mediaPlayer().events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
+            public void error(MediaPlayer mediaPlayer) {
+                System.out.println("error");
+                super.error(mediaPlayer);
+            }
+
+            @Override
             public void finished(MediaPlayer mediaPlayer) {
-                playerFrame.closeFrameBySwing();
+                //playerFrame.closeFrameBySwing();
                 //super.finished(mediaPlayer);
             }
 
@@ -107,7 +112,10 @@ public class MediaPlayerManager {
     }
 
     public void startPlayByUrl(String url) {
-        mediaPlayerComponent.mediaPlayer().media().play(url);
+        System.out.println("play=" + url);
+        boolean result = mediaPlayerComponent.mediaPlayer().media().play(url);
+        mediaPlayerComponent.mediaPlayer().videoSurface().attachVideoSurface();
+        System.out.println("playResult=" + result);
         returnFocus();
     }
 
@@ -116,15 +124,19 @@ public class MediaPlayerManager {
     }
 
     public boolean isPlaying() {
-        return mediaPlayerComponent.mediaPlayer().media().info().state().equals(State.PLAYING);
+        return mediaPlayerComponent.mediaPlayer().status().isPlaying();
+    }
+
+    public void play() {
+        mediaPlayerComponent.mediaPlayer().controls().play();
     }
 
     public void pause() {
         mediaPlayerComponent.mediaPlayer().controls().pause();
     }
 
-    public void play() {
-        mediaPlayerComponent.mediaPlayer().controls().play();
+    public void stop() {
+        mediaPlayerComponent.mediaPlayer().controls().stop();
     }
 
     public void toggleFullScreen() {

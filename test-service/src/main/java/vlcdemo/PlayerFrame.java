@@ -88,13 +88,14 @@ public class PlayerFrame {
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
+                /*SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                     }
-                });
-                mediaPlayerManager.returnFocus();
+                });*/
+                mediaPlayerManager.stop();
+                //mediaPlayerManager.returnFocus();
             }
         });
 

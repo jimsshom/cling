@@ -2,6 +2,8 @@ package vlcdemo;
 
 import java.awt.*;
 
+import avtransportserver.ServerMain;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import uk.co.caprica.vlcj.player.base.Marquee;
 import uk.co.caprica.vlcj.player.base.MarqueePosition;
 
@@ -23,29 +25,37 @@ import uk.co.caprica.vlcj.player.base.MarqueePosition;
 public class MyMediaPlayer {
     private static MediaPlayerManager mediaPlayerManager;
     private static PlayerFrame playerFrame;
+    private static MyMediaPlayer myMediaPlayer = new MyMediaPlayer();
 
-    public static void startVideo(String url) {
+    private MyMediaPlayer() {
         mediaPlayerManager = new MediaPlayerManager();
         playerFrame = new PlayerFrame(mediaPlayerManager);
         mediaPlayerManager.initialEventListener(playerFrame);
+    }
 
-        Marquee marquee = Marquee.marquee()
-            .text("vlcj tutorial")
-            .size(40)
-            .colour(Color.WHITE)
-            .timeout(10000)
-            .position(MarqueePosition.BOTTOM_RIGHT)
-            .opacity(0.8f)
-            .enable();
-
-        //mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
-        //mediaPlayerComponent.mediaPlayer().marquee().set(marquee);
+    public static void startVideo(String url) {
+        if (mediaPlayerManager.isPlaying()) {
+            mediaPlayerManager.stop();
+        }
         mediaPlayerManager.startPlayByUrl(url);
     }
 
 
     public static void main(String[] args) throws InterruptedException {
-        MyMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.avi");
+        myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.mp4");
+/*
+        Thread.sleep(10000);
+
+        myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test2.mkv");
+
+        Thread.sleep(5000);
+
+        myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.mp4");*/
+
+        Thread serverThread = new Thread(new ServerMain());
+        serverThread.setDaemon(false);
+        serverThread.start();
+
         Thread.currentThread().join();
     }
 }
