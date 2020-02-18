@@ -17,7 +17,7 @@ import javax.swing.event.ChangeListener;
 import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
 
 /**
- * @author xiaohe.yz
+ * @author jimsshom
  * @date 2020/02/18
  * @time 14:57
  */
@@ -64,6 +64,8 @@ public class PlayerFrame {
                 //System.out.println(frame.getWidth() + "->" + newWidth);
                 progressPane.setPreferredSize(new Dimension(newWidth, 29));
                 super.componentResized(e);
+
+                mediaPlayerManager.returnFocus();
             }
         });
 
@@ -77,6 +79,7 @@ public class PlayerFrame {
                     mediaPlayerManager.play();
                     updateIconWhenPlay();
                 }
+                mediaPlayerManager.returnFocus();
             }
         });
 
@@ -89,6 +92,7 @@ public class PlayerFrame {
                         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                     }
                 });
+                mediaPlayerManager.returnFocus();
             }
         });
 
@@ -96,6 +100,7 @@ public class PlayerFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mediaPlayerManager.toggleFullScreen();
+                mediaPlayerManager.returnFocus();
             }
         });
 
@@ -113,6 +118,7 @@ public class PlayerFrame {
                     mediaPlayerManager.play();
                     updateIconWhenPlay();
                 }
+                mediaPlayerManager.returnFocus();
             }
         });
 
@@ -123,6 +129,7 @@ public class PlayerFrame {
                 if (!source.getValueIsAdjusting()) {
                     mediaPlayerManager.setVolume(source.getValue());
                 }
+                mediaPlayerManager.returnFocus();
             }
         });
     }

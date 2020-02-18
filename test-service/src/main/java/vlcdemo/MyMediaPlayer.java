@@ -6,7 +6,7 @@ import uk.co.caprica.vlcj.player.base.Marquee;
 import uk.co.caprica.vlcj.player.base.MarqueePosition;
 
 /**
- * @author xiaohe.yz
+ * @author jimsshom
  * @date 2020/02/13
  * @time 22:38
  */
@@ -18,7 +18,7 @@ import uk.co.caprica.vlcj.player.base.MarqueePosition;
 
 /**
  * FIXME:
- * 4. 捕获不到键盘事件
+ * 1. 播放暂停时最大化，界面没有自适应
  */
 public class MyMediaPlayer {
     private static MediaPlayerManager mediaPlayerManager;

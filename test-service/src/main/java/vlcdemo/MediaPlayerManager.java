@@ -4,7 +4,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
@@ -17,13 +16,14 @@ import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreenStrategy;
 
 /**
- * @author xiaohe.yz
+ * @author jimsshom
  * @date 2020/02/18
  * @time 15:10
  */
 public class MediaPlayerManager {
     //private final EmbeddedMediaPlayerComponent mediaPlayerComponent; //macos下用不了，见官方文档
     private static CallbackMediaPlayerComponent mediaPlayerComponent = new CallbackMediaPlayerComponent();
+    private KeyAdapter exitFullScreenKeyAdapter;
 
     public CallbackMediaPlayerComponent getMediaPlayerComponent() {
         return mediaPlayerComponent;
@@ -32,8 +32,6 @@ public class MediaPlayerManager {
     public void initialEventListener(final PlayerFrame playerFrame) {
         mediaPlayerComponent.mediaPlayer().input().enableKeyInputHandling(false);
         mediaPlayerComponent.mediaPlayer().input().enableMouseInputHandling(false);
-
-        mediaPlayerComponent.videoSurfaceComponent().requestFocus();
 
         mediaPlayerComponent.mediaPlayer().events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
@@ -72,16 +70,28 @@ public class MediaPlayerManager {
             }
         });
 
+        exitFullScreenKeyAdapter = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == 27) {
+                    toggleFullScreen();
+                }
+                super.keyPressed(e);
+            }
+        };
+
         mediaPlayerComponent.mediaPlayer().fullScreen().strategy(new AdaptiveFullScreenStrategy(playerFrame.getFrame()) {
             @Override
             protected void onBeforeEnterFullScreen() {
                 //controlsPane.setVisible(false);
+                mediaPlayerComponent.videoSurfaceComponent().addKeyListener(exitFullScreenKeyAdapter);
                 super.onBeforeEnterFullScreen();
             }
 
             @Override
             protected void onAfterExitFullScreen() {
                 //controlsPane.setVisible(true);
+                mediaPlayerComponent.videoSurfaceComponent().removeKeyListener(exitFullScreenKeyAdapter);
                 super.onAfterExitFullScreen();
             }
         });
@@ -119,19 +129,11 @@ public class MediaPlayerManager {
                 super.mouseClicked(e);
             }
         });
-
-        mediaPlayerComponent.videoSurfaceComponent().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {//FIXME: 不知为何收不到键盘消息
-                System.out.println(e.getKeyCode());
-                System.out.println(e.getKeyChar());
-                super.keyPressed(e);
-            }
-        });
     }
 
     public void startPlayByUrl(String url) {
         mediaPlayerComponent.mediaPlayer().media().play(url);
+        returnFocus();
     }
 
     public void releaseResource() {
@@ -160,5 +162,9 @@ public class MediaPlayerManager {
 
     public void setVolume(int value) {
         mediaPlayerComponent.mediaPlayer().audio().setVolume(value);
+    }
+
+    public void returnFocus() {
+        mediaPlayerComponent.videoSurfaceComponent().requestFocus();
     }
 }
