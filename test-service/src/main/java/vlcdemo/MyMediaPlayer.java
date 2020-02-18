@@ -39,8 +39,6 @@ import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreen
 
 /**
  * FIXME:
- * 1. 暂停时改变进度会自动播放
- * 2. 从50多秒开始放
  * 3. 界面布局
  * 4. 捕获不到键盘事件
  */
@@ -148,6 +146,7 @@ public class MyMediaPlayer {
         final JSlider progressBar = new JSlider();
         progressBar.setMinimum(0);
         progressBar.setMaximum(100);
+        progressBar.setValue(0);
         controlsPane.add(progressBar);
 
         final JLabel totalTimeLabel = new JLabel("--");
@@ -206,6 +205,7 @@ public class MyMediaPlayer {
                     //System.out.println(curTime + "->" + newTime);
                     mediaPlayerComponent.mediaPlayer().controls().setTime(newTime);
                     mediaPlayerComponent.mediaPlayer().controls().play();
+                    pauseButton.setIcon(pauseIcon);
                 }
             }
         });
@@ -239,6 +239,8 @@ public class MyMediaPlayer {
                     @Override
                     public void run() {
                         curTimeLabel.setText(MyMediaPlayer.parseTimestamp(newTime));
+                        progressBar.setValueIsAdjusting(true);
+                        //System.out.println("newTime=" + newTime);
                         progressBar.setValue((int)(newTime / 1000));
                     }
                 });
@@ -255,6 +257,8 @@ public class MyMediaPlayer {
                     public void run() {
                         totalTimeLabel.setText(MyMediaPlayer.parseTimestamp(newDuration));
                         progressBar.setMaximum((int)(newDuration / 1000));
+                        //progressBar.setValueIsAdjusting(true);
+                        //progressBar.setValue(0);
                     }
                 });
                 super.mediaDurationChanged(media, newDuration);
