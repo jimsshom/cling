@@ -43,12 +43,25 @@ public class MediaPlayerManager {
             public void finished(MediaPlayer mediaPlayer) {
                 //playerFrame.closeFrameBySwing();
                 //super.finished(mediaPlayer);
+                //finish和stop消息会同时触发
             }
 
             @Override
             public void timeChanged(MediaPlayer mediaPlayer, final long newTime) {
                 playerFrame.updatePlayProgressBySwing(newTime);
                 super.timeChanged(mediaPlayer, newTime);
+            }
+
+            @Override
+            public void playing(MediaPlayer mediaPlayer) {
+                System.out.println("playing");
+                super.playing(mediaPlayer);
+            }
+
+            @Override
+            public void stopped(MediaPlayer mediaPlayer) {
+                System.out.println("stopped");
+                super.stopped(mediaPlayer);
             }
         });
 
@@ -109,6 +122,28 @@ public class MediaPlayerManager {
                 super.mouseClicked(e);
             }
         });
+
+        mediaPlayerComponent.videoSurfaceComponent().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == 39) {//right arrow
+                    mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            skipByTime(10000);
+                        }
+                    });
+                } else if (e.getKeyCode() == 37) { //left arrow
+                    mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            skipByTime(-10000);
+                        }
+                    });
+                }
+                super.keyPressed(e);
+            }
+        });
     }
 
     public void startPlayByUrl(String url) {
@@ -145,6 +180,10 @@ public class MediaPlayerManager {
 
     public void seekByTime(long time) {
         mediaPlayerComponent.mediaPlayer().controls().setTime(time);
+    }
+
+    public void skipByTime(long time) {
+        mediaPlayerComponent.mediaPlayer().controls().skipTime(time);
     }
 
     public void setVolume(int value) {

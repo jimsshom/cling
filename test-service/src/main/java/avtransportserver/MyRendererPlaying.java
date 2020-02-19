@@ -27,7 +27,6 @@ public class MyRendererPlaying extends Playing {
         super.onEntry();
         // Start playing now!
         MyMediaPlayer.startVideo(getTransport().getMediaInfo().getCurrentURI());
-        System.out.println("afterPlay");
     }
 
     @Override

@@ -38,20 +38,19 @@ public class MyMediaPlayer {
             mediaPlayerManager.stop();
         }
         mediaPlayerManager.startPlayByUrl(url);
+        System.out.println("afterPlay: " + url);
+    }
+
+    public static void stopVideo() {
+        if (mediaPlayerManager.isPlaying()) {
+            mediaPlayerManager.stop();
+        }
+        System.out.println("afterStop");
     }
 
 
     public static void main(String[] args) throws InterruptedException {
         myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.mp4");
-/*
-        Thread.sleep(10000);
-
-        myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test2.mkv");
-
-        Thread.sleep(5000);
-
-        myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.mp4");*/
-
         Thread serverThread = new Thread(new ServerMain());
         serverThread.setDaemon(false);
         serverThread.start();
