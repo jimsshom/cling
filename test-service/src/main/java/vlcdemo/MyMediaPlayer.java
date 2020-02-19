@@ -44,6 +44,12 @@ public class MyMediaPlayer {
         System.out.println("afterStop");
     }
 
+    public static void seekByTime(long second) {
+        if (mediaPlayerManager.isPlaying()) {
+            mediaPlayerManager.seekByTime(second * 1000);
+        }
+        System.out.println("afterSeek: " + second);
+    }
 
     public static void main(String[] args) throws InterruptedException {
         myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.mp4");

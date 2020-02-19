@@ -79,6 +79,21 @@ public class MyRendererPlaying extends Playing {
 
     @Override
     public Class<? extends AbstractState> seek(SeekMode unit, String target) {
+        if (SeekMode.ABS_TIME.equals(unit) || SeekMode.REL_TIME.equals(unit)) {
+            System.out.println("seek: " + parseTimeText(target));
+            MyMediaPlayer.seekByTime(parseTimeText(target));
+        }
         return null;
+    }
+
+    private long parseTimeText(String text) {
+        String[] split = text.split(":");
+        if (split.length != 3) {
+            return 0;
+        }
+        int h = Integer.valueOf(split[0]);
+        int m = Integer.valueOf(split[1]);
+        int s = Integer.valueOf(split[2]);
+        return h*3600 + m * 60 + s;
     }
 }
