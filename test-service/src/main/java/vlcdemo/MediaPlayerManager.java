@@ -4,8 +4,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.xml.transform.Result;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.co.caprica.vlcj.media.Media;
 import uk.co.caprica.vlcj.media.MediaEventAdapter;
@@ -27,6 +27,7 @@ public class MediaPlayerManager {
     public CallbackMediaPlayerComponent getMediaPlayerComponent() {
         return mediaPlayerComponent;
     }
+    public List<MediaPlayerEventListener> eventListenerList = new ArrayList<>();
 
     public void initialEventListener(final PlayerFrame playerFrame) {
         mediaPlayerComponent.mediaPlayer().input().enableKeyInputHandling(false);
@@ -49,18 +50,44 @@ public class MediaPlayerManager {
             @Override
             public void timeChanged(MediaPlayer mediaPlayer, final long newTime) {
                 playerFrame.updatePlayProgressBySwing(newTime);
+                mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MediaPlayerEventListener listener : eventListenerList) {
+                            listener.onProgressChange(newTime/1000);
+                        }
+                    }
+                });
+
                 super.timeChanged(mediaPlayer, newTime);
             }
 
             @Override
             public void playing(MediaPlayer mediaPlayer) {
                 System.out.println("playing");
+                mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MediaPlayerEventListener listener : eventListenerList) {
+                            listener.onStateChange(MediaPlayerState.PLAYING);
+                        }
+                    }
+                });
+
                 super.playing(mediaPlayer);
             }
 
             @Override
             public void stopped(MediaPlayer mediaPlayer) {
                 System.out.println("stopped");
+                mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MediaPlayerEventListener listener : eventListenerList) {
+                            listener.onStateChange(MediaPlayerState.STOPPED);
+                        }
+                    }
+                });
                 super.stopped(mediaPlayer);
             }
         });
@@ -69,6 +96,15 @@ public class MediaPlayerManager {
             @Override
             public void mediaDurationChanged(Media media, final long newDuration) {
                 playerFrame.updateTotalDurationBySwing(newDuration);
+                mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MediaPlayerEventListener listener : eventListenerList) {
+                            listener.onTotalTimeChange(newDuration/1000);
+                        }
+                    }
+                });
+
                 super.mediaDurationChanged(media, newDuration);
             }
         });
@@ -144,6 +180,10 @@ public class MediaPlayerManager {
                 super.keyPressed(e);
             }
         });
+    }
+
+    public void registerEventListener(MediaPlayerEventListener listener) {
+        eventListenerList.add(listener);
     }
 
     public void startPlayByUrl(String url) {

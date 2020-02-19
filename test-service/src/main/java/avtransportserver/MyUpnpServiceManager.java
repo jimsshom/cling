@@ -18,13 +18,19 @@ import org.fourthline.cling.model.types.UDN;
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportLastChangeParser;
 import org.fourthline.cling.support.lastchange.LastChangeAwareServiceManager;
 import org.fourthline.cling.support.lastchange.LastChangeParser;
+import vlcdemo.MediaPlayerEventListener;
 
 /**
  * @author xiaohe.yz
  * @date 2020/02/13
  * @time 20:35
  */
-public class ServerMain implements Runnable {
+public class MyUpnpServiceManager implements Runnable {
+    private MyAvTransportService myAvTransportService = new MyAvTransportService(
+        MyRendererStateMachine.class,   // All states
+        MyRendererNoMediaPresent.class  // Initial state
+    );
+
     private LocalDevice createDevice()
         throws ValidationException, LocalServiceBindingException, IOException {
 
@@ -59,10 +65,7 @@ public class ServerMain implements Runnable {
             new LastChangeAwareServiceManager<MyAvTransportService>(service, lastChangeParser) {
                 @Override
                 protected MyAvTransportService createServiceInstance() throws Exception {
-                    return new MyAvTransportService(
-                        MyRendererStateMachine.class,   // All states
-                        MyRendererNoMediaPresent.class  // Initial state
-                    );
+                    return myAvTransportService;
                 }
             }
         );                                                                              // DOC:INC1
@@ -102,10 +105,14 @@ public class ServerMain implements Runnable {
         }
     }
 
+    public MediaPlayerEventListener getMediaPlayerEventListener() {
+        return myAvTransportService;
+    }
+/*
     public static void main(String[] args) throws Exception {
         // Start a user thread that runs the UPnP stack
         Thread serverThread = new Thread(new ServerMain());
         serverThread.setDaemon(false);
         serverThread.start();
-    }
+    }*/
 }

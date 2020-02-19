@@ -9,6 +9,8 @@ import org.fourthline.cling.support.model.PositionInfo;
 import org.fourthline.cling.support.model.TransportAction;
 import org.fourthline.cling.support.model.TransportInfo;
 import org.fourthline.cling.support.model.TransportSettings;
+import vlcdemo.MediaPlayerEventListener;
+import vlcdemo.MediaPlayerState;
 
 /**
  * @author xiaohe.yz
@@ -52,7 +54,7 @@ import org.fourthline.cling.support.model.TransportSettings;
  * getPositionInfo
  * 0
  */
-public class MyAvTransportService extends AVTransportService {
+public class MyAvTransportService extends AVTransportService implements MediaPlayerEventListener {
 
     public MyAvTransportService(Class stateMachineDefinition, Class initialState) {
         super(stateMachineDefinition, initialState);
@@ -199,5 +201,41 @@ public class MyAvTransportService extends AVTransportService {
         return super.getCurrentInstanceIds();
     }
 
+    @Override
+    public void onProgressChange(long second) {
+        try {
+            PositionInfo positionInfo = getPositionInfo(new UnsignedIntegerFourBytes(0));
+            findStateMachine(new UnsignedIntegerFourBytes(0)).getCurrentState().getTransport().setPositionInfo(new PositionInfo(positionInfo, second, second));
+        } catch (AVTransportException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    public void onTotalTimeChange(long second) {
+        try {
+            getPositionInfo(new UnsignedIntegerFourBytes(0)).setTrackDuration(parseTimestamp(second));
+        } catch (AVTransportException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onStateChange(MediaPlayerState state) {
+        if (MediaPlayerState.STOPPED.equals(state)) {
+            try {
+                findStateMachine(new UnsignedIntegerFourBytes(0)).stop();
+            } catch (AVTransportException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String parseTimestamp(long sec) {
+        long h = sec / 3600;
+        long m = (sec % 3600) / 60;
+        long s = sec % 60;
+
+        return String.format("%02d:%02d:%02d", h, m, s);
+    }
 }

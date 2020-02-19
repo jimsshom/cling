@@ -1,11 +1,6 @@
 package vlcdemo;
 
-import java.awt.*;
-
-import avtransportserver.ServerMain;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import uk.co.caprica.vlcj.player.base.Marquee;
-import uk.co.caprica.vlcj.player.base.MarqueePosition;
+import avtransportserver.MyUpnpServiceManager;
 
 /**
  * @author jimsshom
@@ -26,6 +21,7 @@ public class MyMediaPlayer {
     private static MediaPlayerManager mediaPlayerManager;
     private static PlayerFrame playerFrame;
     private static MyMediaPlayer myMediaPlayer = new MyMediaPlayer();
+    private static MyUpnpServiceManager upnpServiceManager = new MyUpnpServiceManager();
 
     private MyMediaPlayer() {
         mediaPlayerManager = new MediaPlayerManager();
@@ -51,7 +47,9 @@ public class MyMediaPlayer {
 
     public static void main(String[] args) throws InterruptedException {
         myMediaPlayer.startVideo("/Users/jimsshom/Desktop/test.mp4");
-        Thread serverThread = new Thread(new ServerMain());
+        mediaPlayerManager.registerEventListener(upnpServiceManager.getMediaPlayerEventListener());
+
+        Thread serverThread = new Thread(upnpServiceManager);
         serverThread.setDaemon(false);
         serverThread.start();
 
