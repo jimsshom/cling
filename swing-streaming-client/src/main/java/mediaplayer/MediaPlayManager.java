@@ -120,9 +120,7 @@ public class MediaPlayManager {
         EventBusManager.addEventAdapter(EventType.STOP, new EventAdapter() {
             @Override
             public void process(String param) {
-                if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
-                    mediaPlayerComponent.mediaPlayer().controls().stop();
-                }
+                mediaPlayerComponent.mediaPlayer().controls().stop();
             }
         });
         EventBusManager.addEventAdapter(EventType.SEEK_BY_TIME, new EventAdapter() {

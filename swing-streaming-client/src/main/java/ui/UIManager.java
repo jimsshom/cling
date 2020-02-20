@@ -74,6 +74,7 @@ public class UIManager {
     private MediaPlayManager mediaPlayManager;
     private KeyAdapter exitFullScreenKeyAdapter;
     private long curTime = 0;
+    private String curState = "";
 
     public UIManager(MediaPlayManager mediaPlayManager) {
         this.mediaPlayManager = mediaPlayManager;
@@ -83,6 +84,12 @@ public class UIManager {
     public void initial() {
         registerEventConsumer();
         registerEventProducer();
+        testButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EventBusManager.fireEvent(EventType.START_NEW_URL, "/Users/jimsshom/Desktop/test.mp4");
+            }
+        });
     }
 
     private void registerEventProducer() {
@@ -145,14 +152,24 @@ public class UIManager {
         });
 
         //Key & Mouse
-        mediaPlayManager.getDisplayComponent().videoSurfaceComponent().addKeyListener(new KeyAdapter() {
+        mediaPlayManager.getDisplayComponent().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 UILog.log("key=" + e.getKeyCode());
                 if (e.getKeyCode() == 39) {//right arrow
                     EventBusManager.fireEvent(EventType.SKIP_BY_TIME, "10000");
-                } else if (e.getKeyCode() == 37) { //left arrow
+                    if ("paused".equals(curState)) {
+                        curTime = curTime + 10000;
+                        EventBusManager.fireEvent(EventType.PROGRESS_TIME, String.valueOf(curTime));
+                    }
+                } else if (e.getKeyCode() == 37) {//left arrow
                     EventBusManager.fireEvent(EventType.SKIP_BY_TIME, "-10000");
+                    if ("paused".equals(curState)) {
+                        curTime = curTime - 10000;
+                        EventBusManager.fireEvent(EventType.PROGRESS_TIME, String.valueOf(curTime));
+                    }
+                } else if (e.getKeyCode() == 32) {//space
+                    EventBusManager.fireEvent(EventType.PLAY_OR_PAUSE, null);
                 }
                 super.keyPressed(e);
             }
@@ -179,14 +196,14 @@ public class UIManager {
             @Override
             protected void onBeforeEnterFullScreen() {
                 controlPane.setVisible(false);
-                mediaPlayManager.getDisplayComponent().videoSurfaceComponent().addKeyListener(exitFullScreenKeyAdapter);
+                mediaPlayManager.getDisplayComponent().addKeyListener(exitFullScreenKeyAdapter);
                 super.onBeforeEnterFullScreen();
             }
 
             @Override
             protected void onAfterExitFullScreen() {
                 controlPane.setVisible(true);
-                mediaPlayManager.getDisplayComponent().videoSurfaceComponent().removeKeyListener(exitFullScreenKeyAdapter);
+                mediaPlayManager.getDisplayComponent().removeKeyListener(exitFullScreenKeyAdapter);
                 super.onAfterExitFullScreen();
             }
         });
@@ -204,10 +221,13 @@ public class UIManager {
             @Override
             public void process(String param) {
                 if ("stopped".equals(param)) {
+                    curState = "stopped";
                     frameLayout.show(frame.getContentPane(), "console");
                 } else if ("playing".equals(param)) {
+                    curState = "playing";
                     pauseButton.setIcon(pauseIcon);
                 } else if ("paused".equals(param)) {
+                    curState = "paused";
                     pauseButton.setIcon(playIcon);
                 }
             }

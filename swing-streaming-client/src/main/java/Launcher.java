@@ -9,6 +9,12 @@ import upnp.UpnpServiceManager;
  * @date 2020/02/20
  * @time 16:04
  */
+
+/**
+ * FIXME:
+ * 2. UI上音量键长度调小
+ * 3. UI上进度label显示偏上
+ */
 public class Launcher {
     private static MediaPlayManager mediaPlayManager;
     private static UIManager uiManager;
