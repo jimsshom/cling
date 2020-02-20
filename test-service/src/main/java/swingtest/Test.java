@@ -57,9 +57,8 @@ public class Test {
         displayPane.setBackground(Color.BLACK);
         playerPane.add(displayPane, BorderLayout.CENTER);
 
-        final JPanel controlPane = new JPanel();
+        final JPanel controlPane = new JPanel(new BorderLayout());
         controlPane.setBackground(Color.WHITE);
-        controlPane.setLayout(new BorderLayout());
 
         final JPanel leftPane = new JPanel();
         leftPane.setBackground(Color.YELLOW);

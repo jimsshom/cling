@@ -37,6 +37,7 @@
         <module>support</module>
         <module>mediarenderer</module>
         <module>test-service</module>
+        <module>swing-streaming-client</module>
     </modules>
 
     <!-- ##################################################################################################### -->

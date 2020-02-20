@@ -63,6 +63,12 @@ public class MediaPlayerManager {
             }
 
             @Override
+            public void paused(MediaPlayer mediaPlayer) {
+                System.out.println("paused");
+                super.paused(mediaPlayer);
+            }
+
+            @Override
             public void playing(MediaPlayer mediaPlayer) {
                 System.out.println("playing");
                 mediaPlayerComponent.mediaPlayer().submit(new Runnable() {
