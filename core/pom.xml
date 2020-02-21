@@ -55,11 +55,11 @@
             </plugin>
 
             <!-- Generate documentation for distribution packaging -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.fourthline.lemma</groupId>
                 <artifactId>lemma-maven-plugin</artifactId>
                 <configuration>
-                    <!-- The directories containing Java (test) sources for citation -->
+                    &lt;!&ndash; The directories containing Java (test) sources for citation &ndash;&gt;
                     <sourceDirectories>
                         <sourceDirectory>src/main/java</sourceDirectory>
                         <sourceDirectory>src/test/java</sourceDirectory>
@@ -77,17 +77,17 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <!-- Website lifecycle -->
-            <plugin>
+            <!--<plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${maven.site.plugin.version}</version>
                 <configuration>
                     <reportPlugins>
-                        <!-- THESE IGNORE GLOBAL PLUGIN MANAGEMENT! -->
+                        &lt;!&ndash; THESE IGNORE GLOBAL PLUGIN MANAGEMENT! &ndash;&gt;
 
-                        <!-- Build the manual for 'site' lifecycle -->
+                        &lt;!&ndash; Build the manual for 'site' lifecycle &ndash;&gt;
                         <plugin>
                             <groupId>org.fourthline.lemma</groupId>
                             <artifactId>lemma-maven-plugin</artifactId>
@@ -99,7 +99,7 @@
                                 </reportSet>
                             </reportSets>
                             <configuration>
-                                <!-- The directories containing Java (test) sources for citation -->
+                                &lt;!&ndash; The directories containing Java (test) sources for citation &ndash;&gt;
                                 <sourceDirectories>
                                     <sourceDirectory>src/main/java</sourceDirectory>
                                     <sourceDirectory>src/test/java</sourceDirectory>
@@ -110,7 +110,7 @@
                             </configuration>
                         </plugin>
 
-                        <!-- Javadoc on the website -->
+                        &lt;!&ndash; Javadoc on the website &ndash;&gt;
                         <plugin>
                             <artifactId>maven-javadoc-plugin</artifactId>
                             <reports>
@@ -122,14 +122,14 @@
                             </configuration>
                         </plugin>
 
-                        <!-- We want cross-referenced source code -->
+                        &lt;!&ndash; We want cross-referenced source code &ndash;&gt;
                         <plugin>
                             <artifactId>maven-jxr-plugin</artifactId>
                         </plugin>
 
                     </reportPlugins>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
         </plugins>
     </build>

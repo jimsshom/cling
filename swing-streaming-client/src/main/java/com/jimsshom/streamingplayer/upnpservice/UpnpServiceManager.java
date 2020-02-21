@@ -1,10 +1,10 @@
-package upnp;
+package com.jimsshom.streamingplayer.upnpservice;
 
 import java.io.IOException;
 
-import eventbus.EventAdapter;
-import eventbus.EventBusManager;
-import eventbus.EventType;
+import com.jimsshom.streamingplayer.eventbus.EventAdapter;
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceImpl;
 import org.fourthline.cling.binding.LocalServiceBindingException;

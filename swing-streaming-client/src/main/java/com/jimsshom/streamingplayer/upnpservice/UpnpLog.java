@@ -1,7 +1,7 @@
-package upnp;
+package com.jimsshom.streamingplayer.upnpservice;
 
-import eventbus.EventBusManager;
-import eventbus.EventType;
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
 
 /**
  * @author jimsshom

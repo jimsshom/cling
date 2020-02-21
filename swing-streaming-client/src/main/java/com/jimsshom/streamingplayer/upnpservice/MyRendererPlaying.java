@@ -1,11 +1,11 @@
-package upnp;
+package com.jimsshom.streamingplayer.upnpservice;
 
 import java.net.URI;
 
-import eventbus.EventBusManager;
-import eventbus.EventType;
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
 import org.fourthline.cling.support.avtransport.impl.state.AbstractState;
-import org.fourthline.cling.support.avtransport.impl.state.Stopped;
+import org.fourthline.cling.support.avtransport.impl.state.Playing;
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable;
 import org.fourthline.cling.support.model.AVTransport;
 import org.fourthline.cling.support.model.MediaInfo;
@@ -15,35 +15,24 @@ import org.fourthline.cling.support.model.SeekMode;
 /**
  * @author xiaohe.yz
  * @date 2020/02/13
- * @time 20:43
+ * @time 20:44
  */
-public class MyRendererStopped extends Stopped {
-    public MyRendererStopped(AVTransport transport) {
+public class MyRendererPlaying extends Playing {
+
+    public MyRendererPlaying(AVTransport transport) {
         super(transport);
     }
 
+    @Override
     public void onEntry() {
         super.onEntry();
-        // Optional: Stop playing, release resources, etc.
-        EventBusManager.fireEvent(EventType.STOP, null);
-        // If you can, you should find and set the duration of the track here!
-        String metaData = getTransport().getPositionInfo().getTrackMetaData();
-        String uri = getTransport().getPositionInfo().getTrackURI();
-        getTransport().setPositionInfo(new PositionInfo(1, metaData, uri));
-    }
-
-    public void onExit() {
-        // Optional: Cleanup etc.
+        // Start playing now!
+        EventBusManager.fireEvent(EventType.START_NEW_URL, getTransport().getMediaInfo().getCurrentURI());
     }
 
     @Override
     public Class<? extends AbstractState> setTransportURI(URI uri, String metaData) {
-        // This operation can be triggered in any state, you should think
-        // about how you'd want your player to react. If we are in Stopped
-        // state nothing much will happen, except that you have to set
-        // the media and position info, just like in MyRendererNoMediaPresent.
-        // However, if this would be the MyRendererPlaying state, would you
-        // prefer stopping first?
+        // Your choice of action here, and what the next state is going to be!
         getTransport().setMediaInfo(
             new MediaInfo(uri.toString(), metaData)
         );
@@ -65,29 +54,46 @@ public class MyRendererStopped extends Stopped {
 
     @Override
     public Class<? extends AbstractState> stop() {
-        /// Same here, if you are stopped already and someone calls STOP, well...
+        // Stop playing!
         return MyRendererStopped.class;
-    }
+    } // DOC:INC1
 
     @Override
     public Class<? extends AbstractState> play(String speed) {
-        // It's easier to let this classes' onEntry() method do the work
-        return MyRendererPlaying.class;
+        return null;
+    }
+
+    @Override
+    public Class<? extends AbstractState> pause() {
+        return null;
     }
 
     @Override
     public Class<? extends AbstractState> next() {
-        return MyRendererStopped.class;
+        return null;
     }
 
     @Override
     public Class<? extends AbstractState> previous() {
-        return MyRendererStopped.class;
+        return null;
     }
 
     @Override
     public Class<? extends AbstractState> seek(SeekMode unit, String target) {
-        // Implement seeking with the stream in stopped state!
-        return MyRendererStopped.class;
+        if (SeekMode.ABS_TIME.equals(unit) || SeekMode.REL_TIME.equals(unit)) {
+            EventBusManager.fireEvent(EventType.SEEK_BY_TIME, String.valueOf(parseTimeText(target)));
+        }
+        return null;
+    }
+
+    private long parseTimeText(String text) {
+        String[] split = text.split(":");
+        if (split.length != 3) {
+            return 0;
+        }
+        int h = Integer.valueOf(split[0]);
+        int m = Integer.valueOf(split[1]);
+        int s = Integer.valueOf(split[2]);
+        return (h*3600 + m * 60 + s) * 1000;
     }
 }

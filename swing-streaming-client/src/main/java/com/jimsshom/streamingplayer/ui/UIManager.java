@@ -1,4 +1,4 @@
-package ui;
+package com.jimsshom.streamingplayer.ui;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,10 +17,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import eventbus.EventAdapter;
-import eventbus.EventBusManager;
-import eventbus.EventType;
-import mediaplayer.MediaPlayManager;
+import com.jimsshom.streamingplayer.eventbus.EventAdapter;
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
+import com.jimsshom.streamingplayer.MainLauncher;
+import com.jimsshom.streamingplayer.mediaplayer.MediaPlayManager;
 import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreenStrategy;
 
 /**
@@ -29,12 +30,11 @@ import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreen
  * @time 16:06
  */
 public class UIManager {
-    private final String path = "/Users/jimsshom/Works/GitRepo/cling/swing-streaming-client/src/main/resources/";
-    private final Icon fullIcon = new ImageIcon(new ImageIcon(path + "FullScreen.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
-    private final Icon pauseIcon = new ImageIcon(new ImageIcon(path + "pause.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
-    private final Icon playIcon = new ImageIcon(new ImageIcon(path + "play.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
-    private final Icon volumeIcon = new ImageIcon(new ImageIcon(path + "volume.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
-    private final Icon stopIcon = new ImageIcon(new ImageIcon(path + "Stop.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+    private final Icon  fullIcon = new ImageIcon(MainLauncher.class.getClassLoader().getResource("FullScreen.png"));
+    private final Icon pauseIcon = new ImageIcon(MainLauncher.class.getClassLoader().getResource("pause.png"));
+    private final Icon playIcon = new ImageIcon(MainLauncher.class.getClassLoader().getResource("play.png"));
+    private final Icon volumeIcon = new ImageIcon(MainLauncher.class.getClassLoader().getResource("volume.png"));
+    private final Icon stopIcon = new ImageIcon(MainLauncher.class.getClassLoader().getResource("Stop.png"));
 
     //frame
     private JFrame frame;

@@ -1,4 +1,4 @@
-package upnp;
+package com.jimsshom.streamingplayer.upnpservice;
 
 import org.fourthline.cling.model.types.UnsignedIntegerFourBytes;
 import org.fourthline.cling.support.avtransport.AVTransportException;

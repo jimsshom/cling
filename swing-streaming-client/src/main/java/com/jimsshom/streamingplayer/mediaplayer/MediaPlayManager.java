@@ -1,10 +1,8 @@
-package mediaplayer;
+package com.jimsshom.streamingplayer.mediaplayer;
 
-import javax.swing.*;
-
-import eventbus.EventAdapter;
-import eventbus.EventBusManager;
-import eventbus.EventType;
+import com.jimsshom.streamingplayer.eventbus.EventAdapter;
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
 import uk.co.caprica.vlcj.media.Media;
 import uk.co.caprica.vlcj.media.MediaEventAdapter;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;

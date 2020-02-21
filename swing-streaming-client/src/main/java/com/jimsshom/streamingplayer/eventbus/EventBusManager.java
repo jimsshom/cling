@@ -1,4 +1,4 @@
-package eventbus;
+package com.jimsshom.streamingplayer.eventbus;
 
 import java.util.ArrayList;
 import java.util.List;

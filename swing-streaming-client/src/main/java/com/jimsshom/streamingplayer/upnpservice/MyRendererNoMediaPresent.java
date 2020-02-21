@@ -1,4 +1,4 @@
-package upnp;
+package com.jimsshom.streamingplayer.upnpservice;
 
 import java.net.URI;
 

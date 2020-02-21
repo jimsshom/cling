@@ -1,8 +1,10 @@
-import eventbus.EventBusManager;
-import eventbus.EventType;
-import mediaplayer.MediaPlayManager;
-import ui.UIManager;
-import upnp.UpnpServiceManager;
+package com.jimsshom.streamingplayer;
+
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
+import com.jimsshom.streamingplayer.mediaplayer.MediaPlayManager;
+import com.jimsshom.streamingplayer.ui.UIManager;
+import com.jimsshom.streamingplayer.upnpservice.UpnpServiceManager;
 
 /**
  * @author jimsshom
@@ -14,7 +16,7 @@ import upnp.UpnpServiceManager;
  * TODO:
  * 1. 喇叭图片旁边空太多
  */
-public class Launcher {
+public class MainLauncher {
     private static MediaPlayManager mediaPlayManager;
     private static UIManager uiManager;
     private static UpnpServiceManager upnpServiceManager;

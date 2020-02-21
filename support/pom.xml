@@ -55,7 +55,7 @@
             </plugin>
 
             <!-- Generate documentation for distribution packaging -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.fourthline.lemma</groupId>
                 <artifactId>lemma-maven-plugin</artifactId>
                 <executions>
@@ -67,7 +67,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <!-- Website lifecycle -->
             <plugin>

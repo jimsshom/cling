@@ -1,4 +1,4 @@
-package eventbus;
+package com.jimsshom.streamingplayer.eventbus;
 
 /**
  * @author jimsshom

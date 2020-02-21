@@ -1,7 +1,7 @@
-package mediaplayer;
+package com.jimsshom.streamingplayer.mediaplayer;
 
-import eventbus.EventBusManager;
-import eventbus.EventType;
+import com.jimsshom.streamingplayer.eventbus.EventBusManager;
+import com.jimsshom.streamingplayer.eventbus.EventType;
 
 /**
  * @author jimsshom
