@@ -29,7 +29,7 @@ import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreen
  * @time 16:06
  */
 public class UIManager {
-    private final String path = "/Users/jimsshom/Works/GitRepo/cling/test-service/src/main/resources/";
+    private final String path = "/Users/jimsshom/Works/GitRepo/cling/swing-streaming-client/src/main/resources/";
     private final Icon fullIcon = new ImageIcon(new ImageIcon(path + "FullScreen.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
     private final Icon pauseIcon = new ImageIcon(new ImageIcon(path + "pause.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
     private final Icon playIcon = new ImageIcon(new ImageIcon(path + "play.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
@@ -265,12 +265,9 @@ public class UIManager {
 
     private void initialPlayerCard() {
         playerPane = new JPanel(new BorderLayout());
-/*        displayPane = new JPanel();
-        displayPane.add(mediaPlayManager.getDisplayComponet());
-        displayPane.setBackground(Color.BLACK);*/
         playerPane.add(mediaPlayManager.getDisplayComponent(), BorderLayout.CENTER);
 
-        leftPane = new JPanel();
+        leftPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pauseButton = new JButton();
         pauseButton.setIcon(playIcon);
         leftPane.add(pauseButton);
@@ -284,7 +281,9 @@ public class UIManager {
         volumeBar.setMinimum(0);
         volumeBar.setMaximum(100);
         volumeBar.setValue(100);
+        volumeBar.setPreferredSize(new Dimension(100, volumeBar.getPreferredSize().height));//preferredSize在渲染前设置
         leftPane.add(volumeBar);
+
         fullScreenButton = new JButton();
         fullScreenButton.setIcon(fullIcon);
         leftPane.add(fullScreenButton);
@@ -296,13 +295,14 @@ public class UIManager {
         progressBar.setMaximum(100);
         centrePane.add(progressBar);
 
-        rightPane = new JPanel();
+        rightPane = new JPanel(new BorderLayout());
+        rightPane.setBorder(new EmptyBorder(0, 0, 0, 5));
         curTimeLabel = new JLabel("--");
-        rightPane.add(curTimeLabel);
+        rightPane.add(curTimeLabel, BorderLayout.WEST);
         splitLabel = new JLabel("/");
-        rightPane.add(splitLabel);
+        rightPane.add(splitLabel, BorderLayout.CENTER);
         totalTimeLabel = new JLabel("--");
-        rightPane.add(totalTimeLabel);
+        rightPane.add(totalTimeLabel, BorderLayout.EAST);
 
         controlPane = new JPanel(new BorderLayout());
         controlPane.add(leftPane, BorderLayout.WEST);

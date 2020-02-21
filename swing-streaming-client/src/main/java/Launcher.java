@@ -11,9 +11,8 @@ import upnp.UpnpServiceManager;
  */
 
 /**
- * FIXME:
- * 2. UI上音量键长度调小
- * 3. UI上进度label显示偏上
+ * TODO:
+ * 1. 喇叭图片旁边空太多
  */
 public class Launcher {
     private static MediaPlayManager mediaPlayManager;
