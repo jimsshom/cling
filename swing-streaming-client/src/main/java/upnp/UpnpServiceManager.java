@@ -35,16 +35,11 @@ public class UpnpServiceManager implements Runnable {
     );
 
     public void initial() {
-        EventBusManager.addEventAdapter(EventType.BEFORE_SYSTEM_EXIT, new EventAdapter() {
-            @Override
-            public void process(String param) {
-                if (upnpService != null) {
-                    upnpService.shutdown();
-                }
-            }
-        });
+        registerEventConsumer();
+        startServiceThread();
+    }
 
-
+    private void startServiceThread() {
         Thread serverThread = new Thread(this);
         serverThread.setDaemon(false);
         serverThread.start();
@@ -56,9 +51,41 @@ public class UpnpServiceManager implements Runnable {
         }
     }
 
+    private void registerEventConsumer() {
+        EventBusManager.addEventAdapter(EventType.BEFORE_SYSTEM_EXIT, new EventAdapter() {
+            @Override
+            public void process(String param) {
+                if (upnpService != null) {
+                    upnpService.shutdown();
+                }
+            }
+        });
+        EventBusManager.addEventAdapter(EventType.STATUS_CHANGE, new EventAdapter() {
+            @Override
+            public void process(String param) {
+                if ("stopped".equals(param)) {
+                    myAvTransportService.onPlayStopped();
+                }
+            }
+        });
+        EventBusManager.addEventAdapter(EventType.TOTAL_TIME, new EventAdapter() {
+            @Override
+            public void process(String param) {
+                myAvTransportService.setTotalTime(Long.parseLong(param));
+            }
+        });
+        EventBusManager.addEventAdapter(EventType.PROGRESS_TIME, new EventAdapter() {
+            @Override
+            public void process(String param) {
+                myAvTransportService.setProgressTime(Long.parseLong(param));
+            }
+        });
+    }
+
     @Override
     public void run() {
         try {
+            UpnpLog.log("启动监听服务...");
             upnpService = new UpnpServiceImpl();
 
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -77,6 +104,7 @@ public class UpnpServiceManager implements Runnable {
             ex.printStackTrace(System.err);
             System.exit(1);
         }
+        UpnpLog.log("监听服务启动成功，等待视频客户端投屏...");
     }
 
     private LocalDevice createDevice()

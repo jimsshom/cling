@@ -81,7 +81,6 @@ public class MyRendererPlaying extends Playing {
     @Override
     public Class<? extends AbstractState> seek(SeekMode unit, String target) {
         if (SeekMode.ABS_TIME.equals(unit) || SeekMode.REL_TIME.equals(unit)) {
-            System.out.println("seek: " + parseTimeText(target));
             EventBusManager.fireEvent(EventType.SEEK_BY_TIME, String.valueOf(parseTimeText(target)));
         }
         return null;
@@ -95,6 +94,6 @@ public class MyRendererPlaying extends Playing {
         int h = Integer.valueOf(split[0]);
         int m = Integer.valueOf(split[1]);
         int s = Integer.valueOf(split[2]);
-        return (h*3600 + m * 60 + s) * 60;
+        return (h*3600 + m * 60 + s) * 1000;
     }
 }

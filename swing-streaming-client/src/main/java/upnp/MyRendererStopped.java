@@ -2,6 +2,8 @@ package upnp;
 
 import java.net.URI;
 
+import eventbus.EventBusManager;
+import eventbus.EventType;
 import org.fourthline.cling.support.avtransport.impl.state.AbstractState;
 import org.fourthline.cling.support.avtransport.impl.state.Stopped;
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable;
@@ -23,6 +25,7 @@ public class MyRendererStopped extends Stopped {
     public void onEntry() {
         super.onEntry();
         // Optional: Stop playing, release resources, etc.
+        EventBusManager.fireEvent(EventType.STOP, null);
         // If you can, you should find and set the duration of the track here!
         String metaData = getTransport().getPositionInfo().getTrackMetaData();
         String uri = getTransport().getPositionInfo().getTrackURI();

@@ -65,137 +65,146 @@ public class MyAvTransportService extends AVTransportService {
     @Override
     public void setAVTransportURI(UnsignedIntegerFourBytes instanceId, String currentURI, String currentURIMetaData)
         throws AVTransportException {
-        System.out.println("setAVTransportURI");
-        System.out.println(instanceId);
-        System.out.println(currentURI);
-        System.out.println(currentURIMetaData);
+        UpnpLog.log("setAVTransportURI: " + instanceId + "," + currentURI + "," + currentURIMetaData);
         super.setAVTransportURI(instanceId, currentURI, currentURIMetaData);
     }
 
     @Override
     public void setNextAVTransportURI(UnsignedIntegerFourBytes instanceId, String nextURI, String nextURIMetaData)
         throws AVTransportException {
-        System.out.println("setNextAVTransportURI");
-        System.out.println(instanceId);
-        System.out.println(nextURI);
-        System.out.println(nextURIMetaData);
+        UpnpLog.log("setNextAVTransportURI: " + instanceId + "," + nextURI + "," + nextURIMetaData);
         super.setNextAVTransportURI(instanceId, nextURI, nextURIMetaData);
     }
 
     @Override
     public void setPlayMode(UnsignedIntegerFourBytes instanceId, String newPlayMode) throws AVTransportException {
-        System.out.println("setPlayMode");
-        System.out.println(instanceId);
-        System.out.println(newPlayMode);
+        UpnpLog.log("setPlayMode: " + instanceId + "," + newPlayMode);
         super.setPlayMode(instanceId, newPlayMode);
     }
 
     @Override
     public void setRecordQualityMode(UnsignedIntegerFourBytes instanceId, String newRecordQualityMode)
         throws AVTransportException {
-        System.out.println("setRecordQualityMode");
-        System.out.println(instanceId);
-        System.out.println(newRecordQualityMode);
+        UpnpLog.log("setRecordQualityMode: " + instanceId + "," + newRecordQualityMode);
         super.setRecordQualityMode(instanceId, newRecordQualityMode);
     }
 
     @Override
     public MediaInfo getMediaInfo(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("getMediaInfo");
-        System.out.println(instanceId);
+        UpnpLog.log("getMediaInfo: " + instanceId);
         return super.getMediaInfo(instanceId);
     }
 
     @Override
     public TransportInfo getTransportInfo(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        //System.out.println("getTransportInfo");
-        //System.out.println(instanceId);
+        //UpnpLog.log("getTransportInfo: " + instanceId);
         return super.getTransportInfo(instanceId);
     }
 
     @Override
     public PositionInfo getPositionInfo(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        //System.out.println("getPositionInfo");
-        //System.out.println(instanceId);
+        //UpnpLog.log("getPositionInfo: " + instanceId);
         return super.getPositionInfo(instanceId);
     }
 
     @Override
     public DeviceCapabilities getDeviceCapabilities(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("getDeviceCapabilities");
-        System.out.println(instanceId);
+        UpnpLog.log("getDeviceCapabilities: " + instanceId);
         return super.getDeviceCapabilities(instanceId);
     }
 
     @Override
     public TransportSettings getTransportSettings(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("getTransportSettings");
-        System.out.println(instanceId);
+        UpnpLog.log("getTransportSettings: " + instanceId);
         return super.getTransportSettings(instanceId);
     }
 
     @Override
     public void stop(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("stop");
-        System.out.println(instanceId);
+        UpnpLog.log("stop: " + instanceId);
         super.stop(instanceId);
     }
 
     @Override
     public void play(UnsignedIntegerFourBytes instanceId, String speed) throws AVTransportException {
-        System.out.println("play");
-        System.out.println(instanceId);
-        System.out.println(speed);
+        UpnpLog.log("play: " + instanceId + "," + speed);
         super.play(instanceId, speed);
     }
 
     @Override
     public void pause(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("pause");
-        System.out.println(instanceId);
+        UpnpLog.log("pause: " + instanceId);
         super.pause(instanceId);
     }
 
     @Override
     public void record(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("record");
-        System.out.println(instanceId);
+        UpnpLog.log("record: " + instanceId);
         super.record(instanceId);
     }
 
     @Override
     public void seek(UnsignedIntegerFourBytes instanceId, String unit, String target) throws AVTransportException {
-        System.out.println("seek");
-        System.out.println(instanceId);
-        System.out.println(unit);
-        System.out.println(target);
+        UpnpLog.log("seek: " + instanceId + "," + unit + "," + target);
         super.seek(instanceId, unit, target);
     }
 
     @Override
     public void next(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("next");
-        System.out.println(instanceId);
+        UpnpLog.log("next: " + instanceId);
         super.next(instanceId);
     }
 
     @Override
     public void previous(UnsignedIntegerFourBytes instanceId) throws AVTransportException {
-        System.out.println("previous");
-        System.out.println(instanceId);
+        UpnpLog.log("previous: " + instanceId);
         super.previous(instanceId);
     }
 
     @Override
     protected TransportAction[] getCurrentTransportActions(UnsignedIntegerFourBytes instanceId) throws Exception {
-        System.out.println("getCurrentTransportActions");
-        System.out.println(instanceId);
+        UpnpLog.log("getCurrentTransportActions: " + instanceId);
         return super.getCurrentTransportActions(instanceId);
     }
 
     @Override
     public UnsignedIntegerFourBytes[] getCurrentInstanceIds() {
-        System.out.println("getCurrentInstanceIds");
+        UpnpLog.log("getCurrentInstanceIds");
         return super.getCurrentInstanceIds();
+    }
+
+    public void onPlayStopped() {
+        try {
+            super.stop(new UnsignedIntegerFourBytes(0));
+        } catch (AVTransportException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setTotalTime(long ms) {
+        try {
+            getPositionInfo(new UnsignedIntegerFourBytes(0)).setTrackDuration(parseTimestamp(ms));
+        } catch (AVTransportException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setProgressTime(long ms) {
+        try {
+            PositionInfo positionInfo = getPositionInfo(new UnsignedIntegerFourBytes(0));
+            long sec = ms / 1000;
+            findStateMachine(new UnsignedIntegerFourBytes(0)).getCurrentState().getTransport().setPositionInfo(new PositionInfo(positionInfo, sec, sec));
+        } catch (AVTransportException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String parseTimestamp(long ms) {
+        long sec = ms / 1000;
+        long h = sec / 3600;
+        long m = (sec % 3600) / 60;
+        long s = sec % 60;
+
+        return String.format("%02d:%02d:%02d", h, m, s);
     }
 }

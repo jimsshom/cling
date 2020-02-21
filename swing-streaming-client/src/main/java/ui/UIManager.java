@@ -44,13 +44,9 @@ public class UIManager {
     //  console
     private JTextArea textArea;
     private JScrollPane scrollPane;
-    //  bottom
-    private JButton testButton;
 
     //player card
     private JPanel playerPane;
-    //  display
-    private JPanel displayPane;
     //  control
     private JPanel controlPane;
     //      left
@@ -84,12 +80,6 @@ public class UIManager {
     public void initial() {
         registerEventConsumer();
         registerEventProducer();
-        testButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EventBusManager.fireEvent(EventType.START_NEW_URL, "/Users/jimsshom/Desktop/test.mp4");
-            }
-        });
     }
 
     private void registerEventProducer() {
@@ -329,20 +319,17 @@ public class UIManager {
 
         textArea = new JTextArea();
         textArea.setBorder(new EmptyBorder(20, 20, 20, 20));
-        textArea.setEnabled(false);
+        textArea.setEnabled(true);
+        textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setBackground(Color.BLACK);
         textArea.setForeground(Color.GREEN);
         textArea.setDisabledTextColor(Color.GREEN);
         textArea.setFont(new Font("楷体",Font.BOLD,20));
-        textArea.append("test one\n");
-        textArea.append("two\n");
         scrollPane = new JScrollPane(textArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        testButton = new JButton("player");
         consolePane.add(scrollPane, BorderLayout.CENTER);
-        consolePane.add(testButton, BorderLayout.SOUTH);
 
         frame.getContentPane().add(consolePane, "console");
     }

@@ -24,7 +24,7 @@ public class Launcher {
     public static void main(String[] args) {
         mediaPlayManager = new MediaPlayManager();
         uiManager = new UIManager(mediaPlayManager);
-        //upnpServiceManager =  new UpnpServiceManager();
+        upnpServiceManager =  new UpnpServiceManager();
 
         uiManager.initial();
         mediaPlayManager.initial();

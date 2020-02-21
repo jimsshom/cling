@@ -17,9 +17,9 @@ public class EventBusManager {
         if (!EventType.LOG.equals(type) && !EventType.PROGRESS_TIME.equals(type)) {
             fireEvent(EventType.LOG, "[Event Fire] " + type + " : " + param);
         }
-        if (EventType.PROGRESS_TIME.equals(type)) {
+        /*if (EventType.PROGRESS_TIME.equals(type)) {
             fireEvent(EventType.LOG, "[Event Fire] " + type + " : " + param);
-        }
+        }*/
         if (adapterMap.containsKey(type)) {
             if (adapterMap.get(type) == null) {
                 return;
