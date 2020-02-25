@@ -1,8 +1,15 @@
 package com.jimsshom.streamingplayer.mediaplayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.jimsshom.streamingplayer.eventbus.EventAdapter;
 import com.jimsshom.streamingplayer.eventbus.EventBusManager;
 import com.jimsshom.streamingplayer.eventbus.EventType;
+import uk.co.caprica.vlcj.factory.discovery.provider.DirectoryProviderDiscoveryStrategy;
+import uk.co.caprica.vlcj.factory.discovery.strategy.LinuxNativeDiscoveryStrategy;
+import uk.co.caprica.vlcj.factory.discovery.strategy.OsxNativeDiscoveryStrategy;
+import uk.co.caprica.vlcj.factory.discovery.strategy.WindowsNativeDiscoveryStrategy;
 import uk.co.caprica.vlcj.media.Media;
 import uk.co.caprica.vlcj.media.MediaEventAdapter;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -15,7 +22,23 @@ import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
  * @time 16:06
  */
 public class MediaPlayManager {
-    private CallbackMediaPlayerComponent mediaPlayerComponent = new CallbackMediaPlayerComponent();
+    private CallbackMediaPlayerComponent mediaPlayerComponent;
+
+    public MediaPlayManager() {
+        List<DirectoryProviderDiscoveryStrategy> defaultStrategyList = new ArrayList<>();
+        defaultStrategyList.add(new LinuxNativeDiscoveryStrategy());
+        defaultStrategyList.add(new OsxNativeDiscoveryStrategy());
+        defaultStrategyList.add(new WindowsNativeDiscoveryStrategy());
+        System.out.println("在以下目录寻找vlclib: ");
+        for (DirectoryProviderDiscoveryStrategy strategy : defaultStrategyList) {
+            if (strategy.supported()) {
+                for (String directory : strategy.discoveryDirectories()) {
+                    System.out.println(directory);
+                }
+            }
+        }
+        mediaPlayerComponent = new CallbackMediaPlayerComponent();
+    }
 
     public void initial() {
         registerEventConsumer();
