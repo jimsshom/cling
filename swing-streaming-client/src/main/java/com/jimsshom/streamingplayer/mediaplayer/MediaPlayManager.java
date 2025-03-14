@@ -29,6 +29,7 @@ public class MediaPlayManager {
         defaultStrategyList.add(new LinuxNativeDiscoveryStrategy());
         defaultStrategyList.add(new OsxNativeDiscoveryStrategy());
         defaultStrategyList.add(new WindowsNativeDiscoveryStrategy());
+
         System.out.println("在以下目录寻找vlclib: ");
         for (DirectoryProviderDiscoveryStrategy strategy : defaultStrategyList) {
             if (strategy.supported()) {

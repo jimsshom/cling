@@ -46,17 +46,6 @@
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${maven.site.plugin.version}</version>
-                <configuration>
-                    <reportPlugins>
-                        <!-- THESE IGNORE GLOBAL PLUGIN MANAGEMENT! -->
-
-                        <!-- We want cross-referenced source code -->
-                        <plugin>
-                            <artifactId>maven-jxr-plugin</artifactId>
-                        </plugin>
-
-                    </reportPlugins>
-                </configuration>
             </plugin>
 
             <plugin>

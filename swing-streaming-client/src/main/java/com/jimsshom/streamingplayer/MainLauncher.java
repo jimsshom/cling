@@ -23,6 +23,9 @@ public class MainLauncher {
     private static EventBusManager eventBusManager;
 
     public static void main(String[] args) {
+        String osArch = System.getProperty("os.arch");
+        System.out.println("OS Architecture: " + osArch);
+
         mediaPlayManager = new MediaPlayManager();
         uiManager = new UIManager(mediaPlayManager);
         upnpServiceManager =  new UpnpServiceManager();

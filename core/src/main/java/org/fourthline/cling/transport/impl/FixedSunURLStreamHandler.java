@@ -15,13 +15,13 @@
 
 package org.fourthline.cling.transport.impl;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.ProtocolException;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
+import java.io.*;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -45,37 +45,110 @@ public class FixedSunURLStreamHandler implements URLStreamHandlerFactory {
     public URLStreamHandler createURLStreamHandler(String protocol) {
         log.fine("Creating new URLStreamHandler for protocol: " + protocol);
         if ("http".equals(protocol)) {
-            return new sun.net.www.protocol.http.Handler() {
-
-                protected java.net.URLConnection openConnection(URL u) throws IOException {
-                    return openConnection(u, null);
-                }
-
-                protected java.net.URLConnection openConnection(URL u, Proxy p) throws IOException {
-                    return new UpnpURLConnection(u, this);
-                }
-            };
+            return new MyHttpURLStreamHandler();
         } else {
             return null;
         }
     }
 
-    static class UpnpURLConnection extends sun.net.www.protocol.http.HttpURLConnection {
+    // 自定义的 HTTP 协议处理器
+    private class MyHttpURLStreamHandler extends URLStreamHandler {
+        @Override
+        protected URLConnection openConnection(URL u) throws IOException {
+            return new UpnpURLConnection(u);
+        }
 
-        private static final String[] methods = {
+        @Override
+        protected URLConnection openConnection(URL u, Proxy p) throws IOException {
+            // 目前暂不支持代理，直接忽略 Proxy 参数
+            return new UpnpURLConnection(u);
+        }
+    }
+
+    static class UpnpURLConnection extends HttpURLConnection {
+
+        private static final List<String> ALLOWED_METHODS = Arrays.asList(
                 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE",
                 "SUBSCRIBE", "UNSUBSCRIBE", "NOTIFY"
-        };
+        );
 
-        protected UpnpURLConnection(URL u, sun.net.www.protocol.http.Handler handler) throws IOException {
-            super(u, handler);
+        private final HttpClient httpClient;
+        private ByteArrayOutputStream requestBody;
+        private HttpResponse<byte[]> response;
+
+        protected UpnpURLConnection(URL url) throws IOException {
+            super(url);
+            this.httpClient = HttpClient.newHttpClient();
+            this.requestBody = new ByteArrayOutputStream();
+        }
+        @Override
+        public void connect() throws IOException {
+            if (connected) {
+                return;
+            }
+            try {
+                HttpRequest.Builder builder = HttpRequest.newBuilder()
+                        .uri(url.toURI());
+                // 如果请求方法支持且有请求体，则附加请求体，否则发送空体请求
+                if (("PUT".equalsIgnoreCase(method) ||
+                        "POST".equalsIgnoreCase(method) ||
+                        "NOTIFY".equalsIgnoreCase(method))
+                        && requestBody.size() > 0) {
+                    builder.method(method, HttpRequest.BodyPublishers.ofByteArray(requestBody.toByteArray()));
+                } else {
+                    builder.method(method, HttpRequest.BodyPublishers.noBody());
+                }
+                HttpRequest request = builder.build();
+                response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+                responseCode = response.statusCode();
+                connected = true;
+            } catch (Exception e) {
+                throw new IOException("请求发送失败", e);
+            }
         }
 
-        public UpnpURLConnection(URL u, String host, int port) throws IOException {
-            super(u, host, port);
+        /**
+         * 获取响应的输入流，若未连接则先发起连接
+         */
+        @Override
+        public InputStream getInputStream() throws IOException {
+            if (!connected) {
+                connect();
+            }
+            if (response == null) {
+                throw new IOException("无响应数据");
+            }
+            return new ByteArrayInputStream(response.body());
         }
 
-        public synchronized OutputStream getOutputStream() throws IOException {
+        /**
+         * 获取输出流，仅支持 PUT、POST、NOTIFY 方法
+         */
+        @Override
+        public OutputStream getOutputStream() throws IOException {
+            if (!("PUT".equalsIgnoreCase(method) ||
+                    "POST".equalsIgnoreCase(method) ||
+                    "NOTIFY".equalsIgnoreCase(method))) {
+                throw new ProtocolException("方法 " + method + " 不支持输出");
+            }
+            return requestBody;
+        }
+
+        /**
+         * 设置请求方法时进行合法性校验
+         */
+        @Override
+        public void setRequestMethod(String method) throws ProtocolException {
+            if (connected) {
+                throw new ProtocolException("连接后无法修改请求方法");
+            }
+            if (!ALLOWED_METHODS.contains(method.toUpperCase())) {
+                throw new ProtocolException("无效的 UPnP HTTP 方法: " + method);
+            }
+            this.method = method.toUpperCase();
+        }
+
+        /*public synchronized OutputStream getOutputStream() throws IOException {
             OutputStream os;
             String savedMethod = method;
             // see if the method supports output
@@ -90,9 +163,9 @@ public class FixedSunURLStreamHandler implements URLStreamHandlerFactory {
             os = super.getOutputStream();
             method = savedMethod;
             return os;
-        }
+        }*/
 
-        public void setRequestMethod(String method) throws ProtocolException {
+        /*public void setRequestMethod(String method) throws ProtocolException {
             if (connected) {
                 throw new ProtocolException("Cannot reset method once connected");
             }
@@ -103,6 +176,17 @@ public class FixedSunURLStreamHandler implements URLStreamHandlerFactory {
                 }
             }
             throw new ProtocolException("Invalid UPnP HTTP method: " + method);
+        }*/
+
+        @Override
+        public void disconnect() {
+// 本例中 HttpClient 不支持断开连接，因此这里只是标记状态
+            connected = false;
+        }
+
+        @Override
+        public boolean usingProxy() {
+            return false;
         }
     }
 }
