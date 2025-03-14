@@ -30,9 +30,10 @@ public class MainLauncher {
         uiManager = new UIManager(mediaPlayManager);
         upnpServiceManager =  new UpnpServiceManager();
 
+        upnpServiceManager.initial();
         uiManager.initial();
         mediaPlayManager.initial();
-        upnpServiceManager.initial();
+
         //EventBusManager.fireEvent(EventType.START_NEW_URL, "/Users/jimsshom/Desktop/test.mp4");
     }
 }

@@ -1,6 +1,7 @@
 package com.jimsshom.streamingplayer.upnpservice;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import com.jimsshom.streamingplayer.eventbus.EventAdapter;
 import com.jimsshom.streamingplayer.eventbus.EventBusManager;
@@ -17,6 +18,7 @@ import org.fourthline.cling.model.meta.LocalService;
 import org.fourthline.cling.model.meta.ManufacturerDetails;
 import org.fourthline.cling.model.meta.ModelDetails;
 import org.fourthline.cling.model.types.DeviceType;
+import org.fourthline.cling.model.types.UDADeviceType;
 import org.fourthline.cling.model.types.UDN;
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportLastChangeParser;
 import org.fourthline.cling.support.lastchange.LastChangeAwareServiceManager;
@@ -43,12 +45,6 @@ public class UpnpServiceManager implements Runnable {
         Thread serverThread = new Thread(this);
         serverThread.setDaemon(false);
         serverThread.start();
-
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private void registerEventConsumer() {
@@ -84,6 +80,7 @@ public class UpnpServiceManager implements Runnable {
 
     @Override
     public void run() {
+        CountDownLatch latch = new CountDownLatch(1); // 阻塞线程的计数器
         try {
             UpnpLog.log("启动监听服务...");
             upnpService = new UpnpServiceImpl();
@@ -105,6 +102,11 @@ public class UpnpServiceManager implements Runnable {
             System.exit(1);
         }
         UpnpLog.log("监听服务启动成功，等待视频客户端投屏...");
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private LocalDevice createDevice()
@@ -116,12 +118,13 @@ public class UpnpServiceManager implements Runnable {
             );
 
         //urn:schemas-upnp-org:device:MediaRenderer:1
-        DeviceType type = new DeviceType("schemas-upnp-org", "MediaRenderer");
+        //DeviceType type = new DeviceType("schemas-upnp-org", "MediaRenderer");
         //new UDADeviceType("AvTransport", 1);
+        DeviceType type = new UDADeviceType("MediaRenderer", 1);
 
         DeviceDetails details =
             new DeviceDetails(
-                "Friendly AVTransport",
+                "Jimsshom Casting",
                 new ManufacturerDetails("Jimsshom's Home"),
                 new ModelDetails(
                     "AVTransport 2000",
